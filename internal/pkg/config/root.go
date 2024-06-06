@@ -101,19 +101,6 @@ func (conf *RootConf) Parse(data []byte) error {
 	if len(conf.TFTP.IpxeBinaries) == 0 {
 		conf.TFTP.IpxeBinaries = defIpxe
 	}
-
-	// check whether ip addr is CIDR type and configure related fields as required
-	if ip, network, err := net.ParseCIDR(conf.Ipaddr); err == nil {
-		conf.Ipaddr = ip.String()
-		if conf.Network == "" {
-			conf.Network = network.IP.String()
-		}
-		if conf.Netmask == "" {
-			mask := network.Mask
-			conf.Netmask = fmt.Sprintf("%d.%d.%d.%d", mask[0], mask[1], mask[2], mask[3])
-		}
-	}
-
 	return nil
 }
 
@@ -128,6 +115,7 @@ func (conf *RootConf) SetDynamicDefaults() (err error) {
 
 		if conf.Ipaddr == "" {
 			wwlog.Verbose("Configuration has no valid network, going to dynamic values")
+			wwlog.Verbose("Ipv6 %s", conf.Ipaddr6)
 			conn, err := net.Dial("udp", "8.8.8.8:80")
 			if err == nil {
 				defer conn.Close()
@@ -184,15 +172,21 @@ func (conf *RootConf) SetDynamicDefaults() (err error) {
 	}
 	// check validity of ipv6 net
 	if conf.Ipaddr6 != "" {
-		_, ipv6net, err := net.ParseCIDR(conf.Ipaddr6)
+		wwlog.Verbose("Ipv6 %s", conf.Ipaddr6)
+		if conf.Ipv6net == "" {
+		   wwlog.Error("Ipv6 network mask has not been set")
+		   return errors.New("Invalid Ipv6 network")
+		}
+		_, ipv6net, err := net.ParseCIDR(conf.Ipv6net)
 		if err != nil {
-			wwlog.Error("Invalid ipv6 address specified, mut be CIDR notation: %s", conf.Ipaddr6)
-			return errors.New("invalid ipv6 network")
+			wwlog.Error("Invalid ipv6 network specified, must be CIDR notation: %s", conf.Ipv6net)
+			return errors.New("Invalid Ipv6 network")
 		}
 		if msize, _ := ipv6net.Mask.Size(); msize > 64 {
-			wwlog.Error("ipv6 mask size must be smaller than 64")
-			return errors.New("invalid ipv6 network size")
+			wwlog.Error("Ipv6 mask size must be smaller than 64")
+			return errors.New("Invalid ipv6 network size")
 		}
+		
 	}
 	return
 }
