@@ -12,7 +12,7 @@ import (
 type parserInfo struct {
 	hwaddr     string
 	ipaddr     string
-	ipaddr6	   string
+	ipaddr6    string
 	remoteport int
 	assetkey   string
 	uuid       string
@@ -23,9 +23,9 @@ type parserInfo struct {
 }
 
 func parseReq(req *http.Request) (parserInfo, error) {
-	var ret 	parserInfo
-	var ipaddr 	[]string
-	var ipaddrtemp	string
+	var ret parserInfo
+	var ipaddr []string
+	var ipaddrtemp string
 
 	url := strings.Split(req.URL.Path, "?")[0]
 	path_parts := strings.Split(url, "/")
@@ -51,9 +51,9 @@ func parseReq(req *http.Request) (parserInfo, error) {
 	ipaddr = strings.Split(req.RemoteAddr, ":")
 	if len(ipaddr) > 2 {
 		for i := 0; i < len(ipaddr)-1; i++ {
-			ipaddrtemp += ipaddr[i]+":"
+			ipaddrtemp += ipaddr[i] + ":"
 		}
-		ret.ipaddr6 = strings.TrimSuffix(ipaddrtemp,":")
+		ret.ipaddr6 = strings.TrimSuffix(ipaddrtemp, ":")
 	}
 	ret.ipaddr = strings.Split(req.RemoteAddr, ":")[0]
 	ret.remoteport, _ = strconv.Atoi(strings.Split(req.RemoteAddr, ":")[len(ipaddr)-1])

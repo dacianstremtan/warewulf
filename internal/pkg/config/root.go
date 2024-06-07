@@ -174,8 +174,8 @@ func (conf *RootConf) SetDynamicDefaults() (err error) {
 	if conf.Ipaddr6 != "" {
 		wwlog.Verbose("Ipv6 %s", conf.Ipaddr6)
 		if conf.Ipv6net == "" {
-		   wwlog.Error("Ipv6 network mask has not been set")
-		   return errors.New("Invalid Ipv6 network")
+			wwlog.Error("Ipv6 network mask has not been set")
+			return errors.New("Invalid Ipv6 network")
 		}
 		_, ipv6net, err := net.ParseCIDR(conf.Ipv6net)
 		if err != nil {
@@ -186,7 +186,7 @@ func (conf *RootConf) SetDynamicDefaults() (err error) {
 			wwlog.Error("Ipv6 mask size must be smaller than 64")
 			return errors.New("Invalid ipv6 network size")
 		}
-		
+
 	}
 	return
 }
